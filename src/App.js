@@ -1,23 +1,58 @@
-import logo from './logo.svg';
+import Header from "./components/Header.js";
+import TodoFrom from "./components/TodoFrom";
+import TodoListItems from "./components/TodoListItems.js";
 import './App.css';
+import { useEffect, useState } from "react";
 
-function App() {
+
+const App = () => {
+
+  const initialState = JSON.parse(localStorage.getItem("items")) || [];
+  const [input,setInput] = useState();
+  const [items,setItems] = useState(initialState);
+  const [editTodo,setEditTodo] = useState();
+
+
+  useEffect(() =>{
+    getTodoInfo();
+   },[]);
+
+   async function getTodoInfo() {
+    const response = await fetch("https://jsonplaceholder.typicode.com/todos");
+    const json = await response.json();
+    setItems(json.slice(0,10));
+   }
+
+  useEffect(() =>{
+    localStorage.setItem("items",JSON.stringify(items));
+  },[items]) 
+    
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      <div className='app-wrapper'>
+        <div>
+        <Header/>
+        </div>
+        <div>
+        <TodoFrom
+        input ={input}
+        setInput ={setInput}
+        items ={items}
+        setItems = {setItems}
+        editTodo ={editTodo} 
+        setEditTodo ={setEditTodo}
+        />
+      </div>
+      <div>
+        <TodoListItems 
+        items ={items} 
+        setItems ={setItems} 
+        setEditTodo ={setEditTodo}
+        />
+      </div>
+      </div>
+     
     </div>
   );
 }
